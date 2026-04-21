@@ -49,6 +49,21 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
 
+    - name: Get npm cache dir
+      if: ${{ inputs.using-local-renovate == 'false' }}
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(npm config get cache)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache npm cache for npx renovate
+      if: ${{ inputs.using-local-renovate == 'false' }}
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ inputs.node-version }}-npx-renovate-v43
+        restore-keys: |
+          ${{ runner.os }}-node-${{ inputs.node-version }}-npx-renovate-
+
     - name: Run npm renovate
       if: ${{ inputs.using-local-renovate == 'true' }}
       shell: bash
