@@ -1,27 +1,43 @@
-# yaml-language-server: https://www.schemastore.org/github-action.json
+# yaml-language-server: $schema=https://www.schemastore.org/github-action.json
 name: Prepare build environment
 description: Setup Node.js & pnpm
 inputs:
   node-version:
+    description: Define Node.js version
     required: false
-    default: 24
+    default: "24"
+  pnpm-version:
+    description: Define pnpm version
+    required: false
+    default: ""
   using-local-renovate:
+    description: if true, using package.json renovate
     required: false
-    default: false
+    default: "false"
   renovate-config-file:
+    description: "Set renovate.global.json path (Default: .github/renovate.global.json)"
     required: false
     default: .github/renovate.global.json
   renovate-token:
+    description: Set GitHub Personal Access Token using Renovate
     required: true
   dry-run:
+    description: if true, dry run renovate
     required: false
-    default: false
+    default: "false"
 
 
 runs:
   using: composite
   steps:
+    - name: Setup pnpm with explicit version
+      if: ${{ inputs.pnpm-version != '' }}
+      uses: pnpm/action-setup@v6
+      with:
+        version: ${{ inputs.pnpm-version }}
+
     - name: Setup pnpm
+      if: ${{ inputs.pnpm-version == '' }}
       uses: pnpm/action-setup@v6
 
     - name: Setup Node.js ${{ inputs.node-version }}

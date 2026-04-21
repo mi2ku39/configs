@@ -22,7 +22,7 @@ renovate config, GitHub Actionsがまとめられています。
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>mi2ku39/configs:renovate"],
-  "platformAutomerge": true,
+  "platformAutomerge": true
 }
 ```
 
