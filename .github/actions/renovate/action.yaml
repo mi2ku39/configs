@@ -35,10 +35,13 @@ runs:
       uses: pnpm/action-setup@v6
       with:
         version: ${{ inputs.pnpm-version }}
+        cache: true
 
     - name: Setup pnpm
       if: ${{ inputs.pnpm-version == '' }}
       uses: pnpm/action-setup@v6
+      with:
+        cache: true
 
     - name: Setup Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v6
@@ -60,7 +63,7 @@ runs:
     - name: pnpm dlx renovate
       if: ${{ inputs.using-local-renovate == 'false' }}
       shell: bash
-      run: pnpm dlx --allow-build={better-sqlite3,core-js-pure,dtrace-provider,protobufjs,protobufjs,re2} renovate@^43 --help
+      run: npx -y renovate@^43
       env:
         RENOVATE_CONFIG_FILE: ${{ inputs.renovate-config-file }}
         RENOVATE_TOKEN: ${{ inputs.renovate-token }}
