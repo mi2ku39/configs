@@ -1,0 +1,112 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        ":disableDependencyDashboard",
+        ":disablePeerDependencies"
+    ],
+    "branchPrefix": "test-renovate/",
+    "gitAuthor": "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>",
+    "labels": [
+        "dependencies"
+    ],
+    "prHourlyLimit": 0,
+    "prConcurrentLimit": 0,
+    "recreateWhen": "always",
+    "rangeStrategy": "pin",
+    "pin": {
+        "automerge": true,
+        "labels": [
+            "pin"
+        ]
+    },
+    "patch": {
+        "automerge": true,
+        "labels": [
+            "patch"
+        ]
+    },
+    "minor": {
+        "labels": [
+            "minor"
+        ]
+    },
+    "major": {
+        "labels": [
+            "major"
+        ]
+    },
+    "packageRules": [
+        {
+            "description": "pnpmDedupe",
+            "matchManagers": [
+                "npm"
+            ],
+            "matchUpdateTypes": [
+                "lockFileMaintenance"
+            ],
+            "postUpdateOptions": [
+                "pnpmDedupe"
+            ]
+        },
+        {
+            "description": "lockFileMaintenance",
+            "matchUpdateTypes": [
+                "pin",
+                "digest",
+                "patch",
+                "minor",
+                "major",
+                "lockFileMaintenance"
+            ],
+            "minimumReleaseAge": "2 days"
+        },
+        {
+            "description": "doNotPinPnpmOverrides",
+            "matchManagers": [
+                "npm"
+            ],
+            "matchDepTypes": [
+                "pnpm.overrides",
+                "pnpm-workspace.overrides"
+            ],
+            "rangeStrategy": "replace"
+        },
+        {
+            "description": "updateTransportArtifact",
+            "groupName": "actions-artifact",
+            "matchPackageNames": [
+                "actions/upload-artifact",
+                "actions/download-artifact"
+            ],
+            "automerge": true,
+            "major": {
+                "automerge": false
+            }
+        },
+        {
+            "description": "groupOxTools",
+            "groupName": "ox-tools",
+            "matchPackageNames": [
+                "oxlint",
+                "oxfmt",
+                "oxlint-tsgolint"
+            ]
+        },
+        {
+            "groupName": "nxui",
+            "matchPackageNames": [
+                "@mi2ku39/nxui",
+                "@mi2ku39/nxui-runtime",
+                "@mi2ku39/nxui-preset"
+            ],
+            "enabled": false
+        }
+    ],
+    "npmrcMerge": true,
+    "npmrc": "@mi2ku39:registry=https://npm.pkg.github.com/",
+    "vulnerabilityAlerts": {
+        "enabled": true
+    },
+    "minimumReleaseAge": "2 days"
+}

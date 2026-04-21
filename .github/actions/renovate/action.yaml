@@ -1,0 +1,53 @@
+# yaml-language-server: https://www.schemastore.org/github-action.json
+name: Prepare build environment
+description: Setup Node.js & pnpm
+inputs:
+  node-version:
+    required: false
+    default: 24
+  using-local-renovate:
+    required: false
+    default: false
+  renovate-config-file:
+    required: false
+    default: .github/renovate.global.json
+  renovate-token:
+    required: true
+  dry-run:
+    required: false
+    default: false
+
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+
+    - name: Setup Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "pnpm"
+
+    - name: Run npm renovate
+      if: ${{ inputs.using-local-renovate == 'true' }}
+      shell: bash
+      run: pnpm exec renovate
+      env:
+        RENOVATE_CONFIG_FILE: ${{ inputs.renovate-config-file }}
+        RENOVATE_TOKEN: ${{ inputs.renovate-token }}
+        RENOVATE_HOST_RULES: '[{"hostType":"npm","matchHost":"https://npm.pkg.github.com/","token":"${{ inputs.renovate-token }}"}]'
+        RENOVATE_DRY_RUN: ${{ inputs.dry-run }}
+        RENOVATE_GIT_AUTHOR: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+
+    - name: pnpm dlx renovate
+      if: ${{ inputs.using-local-renovate == 'false' }}
+      shell: bash
+      run: pnpm dlx --allow-build={better-sqlite3,core-js-pure,dtrace-provider,protobufjs,protobufjs,re2} renovate@^43 --help
+      env:
+        RENOVATE_CONFIG_FILE: ${{ inputs.renovate-config-file }}
+        RENOVATE_TOKEN: ${{ inputs.renovate-token }}
+        RENOVATE_HOST_RULES: '[{"hostType":"npm","matchHost":"https://npm.pkg.github.com/","token":"${{ inputs.renovate-token }}"}]'
+        RENOVATE_DRY_RUN: ${{ inputs.dry-run }}
+        RENOVATE_GIT_AUTHOR: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
