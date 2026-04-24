@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
+name: Run Renovate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * 5"
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Execute Renovate
+        uses: ./.github/actions/renovate
+        with:
+          renovate-token: ${{ secrets.GH_PAT_FOR_RENOVATE }}
+          pnpm-version: 10
