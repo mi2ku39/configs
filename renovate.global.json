@@ -1,0 +1,9 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-global-schema.json",
+    "onboarding": false,
+    "platform": "github",
+    "repositories": [
+        "mi2ku39/configs"
+    ],
+    "username": "renovate"
+}

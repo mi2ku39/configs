@@ -6,10 +6,6 @@ inputs:
     description: Define Node.js version
     required: false
     default: "24"
-  pnpm-version:
-    description: Define pnpm version
-    required: false
-    default: ""
   using-local-renovate:
     description: if true, using package.json renovate
     required: false
@@ -30,24 +26,24 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup pnpm with explicit version
-      if: ${{ inputs.pnpm-version != '' }}
-      uses: pnpm/action-setup@v6
-      with:
-        version: ${{ inputs.pnpm-version }}
-        cache: true
-
     - name: Setup pnpm
-      if: ${{ inputs.pnpm-version == '' }}
+      if: ${{ inputs.using-local-renovate == 'true' }}
       uses: pnpm/action-setup@v6
       with:
         cache: true
 
-    - name: Setup Node.js ${{ inputs.node-version }}
+    - name: Setup Node.js ${{ inputs.node-version }} enabled pnpm cache
+      if: ${{ inputs.using-local-renovate == 'true' }}
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
+
+    - name: Setup Node.js ${{ inputs.node-version }}
+      if: ${{ inputs.using-local-renovate == 'false' }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
 
     - name: Get npm cache dir
       if: ${{ inputs.using-local-renovate == 'false' }}
@@ -75,7 +71,7 @@ runs:
         RENOVATE_DRY_RUN: ${{ inputs.dry-run }}
         RENOVATE_GIT_AUTHOR: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
 
-    - name: pnpm dlx renovate
+    - name: Execute npx renovate
       if: ${{ inputs.using-local-renovate == 'false' }}
       shell: bash
       run: npx -y renovate@^43
