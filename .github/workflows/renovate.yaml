@@ -15,4 +15,4 @@ jobs:
         uses: ./.github/actions/renovate
         with:
           renovate-token: ${{ secrets.GH_PAT_FOR_RENOVATE }}
-          pnpm-version: 10
+          renovate-config-file: renovate.global.json
