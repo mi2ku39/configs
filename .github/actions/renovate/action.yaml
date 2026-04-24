@@ -60,6 +60,11 @@ runs:
         restore-keys: |
           ${{ runner.os }}-node-${{ inputs.node-version }}-npx-renovate-
 
+    - name: Install pnpm dependencies
+      if: ${{ inputs.using-local-renovate == 'true' }}
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
     - name: Run npm renovate
       if: ${{ inputs.using-local-renovate == 'true' }}
       shell: bash
