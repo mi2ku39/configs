@@ -45,6 +45,7 @@ Only override entries below the `# audit` marker and before the next top-level Y
 | Name | Default | Description |
 | --- | --- | --- |
 | `node-version` | `24` | Node.js version used to run pnpm audit. |
+| `pnpm-version` | `10` | pnpm version used to run install and audit commands. |
 | `workspace-file` | `pnpm-workspace.yaml` | Path to the pnpm workspace file that contains the audit override block. |
 | `report-path` | `audit-overrides-report.md` | Path where the Markdown report is written. |
 | `install-dependencies` | `true` | Whether to run pnpm install before auditing. |

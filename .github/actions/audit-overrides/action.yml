@@ -6,6 +6,10 @@ inputs:
     description: Node.js version used to run pnpm audit.
     required: false
     default: "24"
+  pnpm-version:
+    description: pnpm version used to run install and audit commands.
+    required: false
+    default: "10"
   workspace-file:
     description: Path to the pnpm workspace file that contains the audit override block.
     required: false
@@ -64,6 +68,8 @@ runs:
   steps:
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
+      with:
+        version: ${{ inputs.pnpm-version }}
 
     - name: Use Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v6
