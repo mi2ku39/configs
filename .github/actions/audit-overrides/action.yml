@@ -1,0 +1,123 @@
+name: Audit pnpm overrides
+description: Detect pnpm audit overrides that may be removable and optionally create an issue report.
+
+inputs:
+  node-version:
+    description: Node.js version used to run pnpm audit.
+    required: false
+    default: "24"
+  workspace-file:
+    description: Path to the pnpm workspace file that contains the audit override block.
+    required: false
+    default: pnpm-workspace.yaml
+  report-path:
+    description: Path where the Markdown report is written.
+    required: false
+    default: audit-overrides-report.md
+  install-dependencies:
+    description: Whether to run pnpm install before auditing.
+    required: false
+    default: "true"
+  install-command:
+    description: Command used when install-dependencies is true.
+    required: false
+    default: pnpm install --frozen-lockfile
+  append-summary:
+    description: Whether to append the report to the GitHub Actions step summary.
+    required: false
+    default: "true"
+  create-issue:
+    description: Whether to create a GitHub issue with the report.
+    required: false
+    default: "false"
+  issue-title-prefix:
+    description: Prefix for created report issue titles.
+    required: false
+    default: Audit overrides report
+  github-token:
+    description: Token used by actions/github-script when create-issue is true.
+    required: false
+    default: ""
+
+outputs:
+  report-path:
+    description: Path to the generated Markdown report.
+    value: ${{ steps.audit.outputs.report-path }}
+  removable-count:
+    description: Number of overrides that appear removable.
+    value: ${{ steps.audit.outputs.removable-count }}
+  review-count:
+    description: Number of overrides that still need review.
+    value: ${{ steps.audit.outputs.review-count }}
+  failed-count:
+    description: Number of overrides that could not be checked.
+    value: ${{ steps.audit.outputs.failed-count }}
+  baseline-count:
+    description: Number of advisories in the baseline audit.
+    value: ${{ steps.audit.outputs.baseline-count }}
+  has-removable:
+    description: Whether at least one override appears removable.
+    value: ${{ steps.audit.outputs.has-removable }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+
+    - name: Install dependencies
+      if: ${{ inputs.install-dependencies == 'true' }}
+      shell: bash
+      env:
+        INSTALL_COMMAND: ${{ inputs.install-command }}
+      run: $INSTALL_COMMAND
+
+    - name: Check audit overrides
+      id: audit
+      shell: bash
+      env:
+        AUDIT_OVERRIDES_WORKSPACE_PATH: ${{ inputs.workspace-file }}
+        AUDIT_OVERRIDES_REPORT_PATH: ${{ inputs.report-path }}
+      run: node "$GITHUB_ACTION_PATH/check-audit-overrides.mjs"
+
+    - name: Append report to step summary
+      if: ${{ inputs.append-summary == 'true' }}
+      shell: bash
+      env:
+        REPORT_PATH: ${{ steps.audit.outputs.report-path }}
+      run: cat "$REPORT_PATH" >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Create report issue
+      if: ${{ inputs.create-issue == 'true' }}
+      uses: actions/github-script@v8
+      env:
+        REPORT_PATH: ${{ steps.audit.outputs.report-path }}
+        ISSUE_TITLE_PREFIX: ${{ inputs.issue-title-prefix }}
+      with:
+        github-token: ${{ inputs.github-token || github.token }}
+        script: |
+          const fs = require("node:fs");
+          const report = fs.readFileSync(process.env.REPORT_PATH, "utf8");
+          const { owner, repo } = context.repo;
+          const date = new Date().toISOString().slice(0, 10);
+          const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+          const title = `${process.env.ISSUE_TITLE_PREFIX} - ${date} #${context.runNumber}`;
+          const body = [
+            report,
+            "",
+            "---",
+            `Workflow run: ${runUrl}`,
+          ].join("\n");
+
+          await github.rest.issues.create({
+            owner,
+            repo,
+            title,
+            body,
+          });
