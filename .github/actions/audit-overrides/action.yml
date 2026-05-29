@@ -101,7 +101,7 @@ runs:
 
     - name: Create report issue
       if: ${{ inputs.create-issue == 'true' }}
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       env:
         REPORT_PATH: ${{ steps.audit.outputs.report-path }}
         ISSUE_TITLE_PREFIX: ${{ inputs.issue-title-prefix }}
