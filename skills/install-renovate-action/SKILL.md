@@ -1,6 +1,6 @@
 ---
 name: install-renovate-action
-description: Install or update the shared Renovate GitHub Action from mi2ku39/configs in a target repository. Use when a coding agent is asked to set up Renovate, create or update .github/workflows/renovate.yaml, renovate.global.json, or renovate.json, migrate an existing Renovate workflow to the shared action, or adapt Renovate settings for a repository.
+description: Install or update the shared Renovate GitHub Action from mi2ku39/configs in a target repository. Use when a coding agent is asked to set up Renovate, create or update .github/workflows/renovate.yaml, .github/renovate.global.json, or renovate.json, migrate an existing Renovate workflow to the shared action, or adapt Renovate settings for a repository.
 ---
 
 # Install Renovate Action
@@ -11,7 +11,7 @@ Use this skill to modify a target repository so Renovate runs through
 The skill installs:
 
 - `.github/workflows/renovate.yaml`
-- `renovate.global.json`
+- `.github/renovate.global.json`
 - `renovate.json`
 
 Prefer editing the target repository directly. Ask questions only when the secret
@@ -22,7 +22,7 @@ name, repository slug, or Renovate policy cannot be inferred safely.
 1. Inspect the target repository.
    - Identify the repository slug from `git remote -v` when available.
    - Check for existing Renovate files: `.github/workflows/*renovate*`,
-     `renovate.json`, `.github/renovate.json`, `renovate.global.json`, and
+     `renovate.json`, `.github/renovate.json`, `.github/renovate.global.json`, and
      package-manager-specific Renovate hints.
    - Preserve useful existing Renovate policy unless it is duplicated by the shared
      config.
@@ -36,9 +36,10 @@ name, repository slug, or Renovate policy cannot be inferred safely.
    - Use `mi2ku39/configs/.github/actions/renovate@main`.
    - Preserve intentional existing triggers or schedules when updating an existing
      workflow.
-   - Use `renovate.global.json` as the config file unless the user asks otherwise.
+   - Use `.github/renovate.global.json` as the config file unless the user asks
+     otherwise.
 
-4. Create or update `renovate.global.json`.
+4. Create or update `.github/renovate.global.json`.
    - Set `repositories` to the target repository slug.
    - Keep existing additional repositories if the file intentionally manages
      multiple repositories.
@@ -77,7 +78,7 @@ jobs:
         uses: mi2ku39/configs/.github/actions/renovate@main
         with:
           renovate-token: ${{ secrets.GH_PAT_FOR_RENOVATE }}
-          renovate-config-file: renovate.global.json
+          renovate-config-file: .github/renovate.global.json
 ```
 
 If the repository manages Renovate as a local pnpm dependency, add:
@@ -90,7 +91,7 @@ Use `dry-run: "true"` only when the user explicitly asks for dry-run behavior.
 
 ## Global Config
 
-Create `renovate.global.json` for the target repository:
+Create `.github/renovate.global.json` for the target repository:
 
 ```json
 {
@@ -136,7 +137,8 @@ When an existing `renovate.json` exists:
 - Do not overwrite existing Renovate workflows blindly.
 - Convert the Renovate execution step to the shared action while preserving
   intentional triggers and permissions.
-- Keep `renovate.global.json` `repositories` accurate for the target repository.
+- Keep `.github/renovate.global.json` `repositories` accurate for the target
+  repository.
 - Avoid changing package manager versions or installing dependencies just to set up
   Renovate.
 - The shared action injects `RENOVATE_HOST_RULES` for GitHub Packages using the
