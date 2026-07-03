@@ -1,0 +1,4 @@
+interface:
+  display_name: "Install Renovate Action"
+  short_description: "Install shared Renovate action."
+  default_prompt: "Install the shared Renovate action into this repository."

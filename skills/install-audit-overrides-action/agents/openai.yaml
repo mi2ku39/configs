@@ -1,0 +1,4 @@
+interface:
+  display_name: "Install Audit Overrides"
+  short_description: "Install pnpm audit override checks."
+  default_prompt: "Install the shared audit-overrides action into this repository."
