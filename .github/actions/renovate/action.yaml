@@ -21,6 +21,10 @@ inputs:
     description: if true, dry run renovate
     required: false
     default: "false"
+  cache:
+    description: "if false, disable dependency caching (pnpm / npm). Useful on self-hosted runners to skip cache upload/download"
+    required: false
+    default: "true"
 
 
 runs:
@@ -30,29 +34,31 @@ runs:
       if: ${{ inputs.using-local-renovate == 'true' }}
       uses: pnpm/action-setup@v6
       with:
-        cache: true
+        cache: ${{ inputs.cache == 'true' }}
 
-    - name: Setup Node.js ${{ inputs.node-version }} enabled pnpm cache
+    - name: Setup Node.js ${{ inputs.node-version }} for pnpm
       if: ${{ inputs.using-local-renovate == 'true' }}
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
-        cache: "pnpm"
+        cache: ${{ inputs.cache == 'true' && 'pnpm' || '' }}
+        package-manager-cache: ${{ inputs.cache == 'true' }}
 
     - name: Setup Node.js ${{ inputs.node-version }}
       if: ${{ inputs.using-local-renovate == 'false' }}
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
+        package-manager-cache: ${{ inputs.cache == 'true' }}
 
     - name: Get npm cache dir
-      if: ${{ inputs.using-local-renovate == 'false' }}
+      if: ${{ inputs.using-local-renovate == 'false' && inputs.cache == 'true' }}
       id: npm-cache-dir
       shell: bash
       run: echo "dir=$(npm config get cache)" >> "$GITHUB_OUTPUT"
 
     - name: Cache npm cache for npx renovate
-      if: ${{ inputs.using-local-renovate == 'false' }}
+      if: ${{ inputs.using-local-renovate == 'false' && inputs.cache == 'true' }}
       uses: actions/cache@v5
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}

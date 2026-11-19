@@ -36,7 +36,7 @@ Use `using-local-renovate` when the target repository manages Renovate as a pack
     renovate-config-file: renovate.global.json
 ```
 
-When enabled, the action sets up pnpm, enables the pnpm cache through `actions/setup-node`, runs `pnpm install --frozen-lockfile`, and then runs `pnpm exec renovate`.
+When enabled, the action sets up pnpm, enables the pnpm cache through `actions/setup-node` (unless `cache` is `false`), runs `pnpm install --frozen-lockfile`, and then runs `pnpm exec renovate`.
 
 ## Inputs
 
@@ -47,6 +47,7 @@ When enabled, the action sets up pnpm, enables the pnpm cache through `actions/s
 | `renovate-config-file` | `.github/renovate.global.json` | Path passed to `RENOVATE_CONFIG_FILE`. |
 | `renovate-token` | Required | GitHub token passed to `RENOVATE_TOKEN` and used for GitHub Packages npm host rules. |
 | `dry-run` | `false` | Value passed to `RENOVATE_DRY_RUN`. |
+| `cache` | `true` | Whether to enable dependency caching (pnpm cache or npm cache for `npx renovate`). Set to `false` on self-hosted runners to skip cache restore/upload time. |
 
 ## Token
 

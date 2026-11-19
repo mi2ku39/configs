@@ -36,7 +36,7 @@ jobs:
     renovate-config-file: renovate.global.json
 ```
 
-有効にすると、このアクションは pnpm をセットアップし、`actions/setup-node` で pnpm キャッシュを有効化し、`pnpm install --frozen-lockfile` を実行してから `pnpm exec renovate` を実行します。
+有効にすると、このアクションは pnpm をセットアップし、`actions/setup-node` で pnpm キャッシュを有効化し（`cache` が `false` の場合を除く）、`pnpm install --frozen-lockfile` を実行してから `pnpm exec renovate` を実行します。
 
 ## 入力
 
@@ -47,6 +47,7 @@ jobs:
 | `renovate-config-file` | `.github/renovate.global.json` | `RENOVATE_CONFIG_FILE` に渡すパス。 |
 | `renovate-token` | 必須 | `RENOVATE_TOKEN` に渡し、GitHub Packages の npm ホストルールにも使用する GitHub トークン。 |
 | `dry-run` | `false` | `RENOVATE_DRY_RUN` に渡す値。 |
+| `cache` | `true` | 依存関係のキャッシュ（pnpm キャッシュ、または `npx renovate` 用の npm キャッシュ）を有効にするかどうか。セルフホストランナーでキャッシュの復元・アップロード時間を省きたい場合は `false` を指定します。 |
 
 ## トークン
 
