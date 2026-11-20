@@ -32,13 +32,13 @@ runs:
   steps:
     - name: Setup pnpm
       if: ${{ inputs.using-local-renovate == 'true' }}
-      uses: pnpm/action-setup@v6
+      uses: pnpm/action-setup@v6.1.1
       with:
         cache: ${{ inputs.cache == 'true' }}
 
     - name: Setup Node.js ${{ inputs.node-version }} for pnpm
       if: ${{ inputs.using-local-renovate == 'true' }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v6.5.0
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ inputs.cache == 'true' && 'pnpm' || '' }}
@@ -46,7 +46,7 @@ runs:
 
     - name: Setup Node.js ${{ inputs.node-version }}
       if: ${{ inputs.using-local-renovate == 'false' }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v6.5.0
       with:
         node-version: ${{ inputs.node-version }}
         package-manager-cache: ${{ inputs.cache == 'true' }}
@@ -59,7 +59,7 @@ runs:
 
     - name: Cache npm cache for npx renovate
       if: ${{ inputs.using-local-renovate == 'false' && inputs.cache == 'true' }}
-      uses: actions/cache@v5
+      uses: actions/cache@v5.1.0
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-node-${{ inputs.node-version }}-npx-renovate-v43
